@@ -42,17 +42,21 @@ public class AirMail {
     }
 
     /**
-    * Register an application by sending a broadcast to AirMail
-    * and setup broadcast receiver with <code>apidReceiver</code> to accept
-    * apid.
+    * Set APIDReceiver
+    *
+    * @param apidRecever
+    */
+    public void setAPIDReceiver(Context ctx, final APIDReceiver apidReceiver) {
+        apidReceiverClass = apidReceiver;
+    }
+
+    /**
+    * Register an application by sending a broadcast to AirMail.
     * 
     * @param ctx  Application Context
-    * @param apidReceiver Callback that accepts apid
     */
-    public void register(Context ctx, final APIDReceiver apidReceiver) {
+    public void register(Context ctx) {
         Log.d(UA.LOG_TAG, "Registering");
-        apidReceiverClass = apidReceiver;
-      
         /* Ensure AirMail is installed and if not, prompt user for install */
         AirMailInstaller ami = new AirMailInstaller(ctx);
         if (ami.controlCenterInstalled()) {
