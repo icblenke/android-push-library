@@ -123,10 +123,9 @@ public class AirMail {
 
                         new AlertDialog.Builder(ctx).setTitle("Android Market Missing")
                             .setMessage(
-                            "AirMail Control Panel will begin downloading, but " +
-                            "since this device doesn't include the Android Market, you " +
-                            "will be required to install the application manual once " +
-                            "the download has finished by clicking on the downloaded item."
+                            "We will begin downloading AirMail Control Panel shortly. " +
+                            "Since this device doesn't include the Android Marketplace, " +
+                            "you'll need to tap the downloaded item once it's finished. Thanks!"
                             ).setPositiveButton("OK", missingMarketOk).create().show();
                     }
                     
