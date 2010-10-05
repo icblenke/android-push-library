@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.pm.PackageInfo;
+import android.content.ActivityNotFoundException;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.util.Log;
@@ -36,7 +37,7 @@ public class AirMail {
         }
         return instance;
     }
-
+    
     protected AirMail() {
         // defeats instantiation.
     }
@@ -95,14 +96,40 @@ public class AirMail {
             }
             
         };
+
+        // If the device is missing the Android market we throw in an extra
+        // dialog to inform them they have to take extra steps to install
+        // the apk once downloaded.
+        OnClickListener missingMarketOk = new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent s3Intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://com.urbanairship.filereleases.s3.amazonaws.com/amcp-latest.apk"));
+                ctx.startActivity(s3Intent);
+            }
+        };
+        
         
         OnClickListener btnOnClick = new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == DialogInterface.BUTTON_POSITIVE) {
-                    Intent marketIntent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("market://details?id=" + AIRMAIL_PACKAGE));
-                    ctx.startActivity(marketIntent);
+                    
+                    try {
+                        Intent marketIntent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=" + AIRMAIL_PACKAGE));
+                        ctx.startActivity(marketIntent);
+                    } catch (ActivityNotFoundException e) {
+
+                        new AlertDialog.Builder(ctx).setTitle("Android Market Missing")
+                            .setMessage(
+                            "AirMail Control Panel will begin downloading, but " +
+                            "since this device doesn't include the Android Market, you " +
+                            "will be required to install the application manual once " +
+                            "the download has finished by clicking on the downloaded item."
+                            ).setPositiveButton("OK", missingMarketOk).create().show();
+                    }
+                    
                     startPollingForInstall();
                 } else if(which == DialogInterface.BUTTON_NEGATIVE){
                     apidReceiverClass.onAirMailInstallRefusal();
